@@ -1,0 +1,12 @@
+.root { position: relative; overflow: hidden; }
+.viewport { height: 100%; width: 100%; }
+.scrollbar {
+  display: flex;
+  touch-action: none;
+  user-select: none;
+  transition: background 0.15s;
+}
+.scrollbar[data-orientation="vertical"]   { width: 8px; border-left: 1px solid transparent; padding: 1px; height: 100%; }
+.scrollbar[data-orientation="horizontal"] { height: 8px; border-top: 1px solid transparent; padding: 1px; flex-direction: column; }
+.thumb { position: relative; flex: 1; border-radius: var(--radius-full); background: var(--border); }
+.thumb::before { content: ''; position: absolute; inset: -50%; }

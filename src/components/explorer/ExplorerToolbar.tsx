@@ -1,12 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Search, SortAsc, SortDesc, Pin, FolderPlus, Filter, X } from 'lucide-react';
+import { Search, SortAsc, SortDesc, Pin, FolderPlus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useExplorerStore } from '@/lib/store';
 import { FileType, SortField } from '@/types';
+import s from './explorer.module.css';
 
 const FILE_TYPES: { value: FileType; label: string }[] = [
   { value: 'pdf', label: 'PDF' },
@@ -38,41 +39,38 @@ export function ExplorerToolbar({ onNewFolder }: { onNewFolder: () => void }) {
     setFilter({ sortDirection: filter.sortDirection === 'asc' ? 'desc' : 'asc' });
 
   return (
-    <div className="flex flex-col gap-2 p-3 border-b border-zinc-800 bg-zinc-950/60">
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+    <div className={s.toolbar}>
+      <div className={s.searchRow}>
+        <div className={s.searchWrap}>
+          <span className={s.searchIcon}><Search size={14} /></span>
           <Input
-            className="pl-8 h-8 text-xs"
+            style={{ paddingLeft: 32, height: 32, fontSize: 11 }}
             placeholder="Search files and folders…"
             value={filter.search}
             onChange={(e) => setFilter({ search: e.target.value })}
           />
           {filter.search && (
-            <button className="absolute right-2 top-1/2 -translate-y-1/2" onClick={() => setFilter({ search: '' })}>
-              <X className="h-3.5 w-3.5 text-zinc-500" />
+            <button className={s.searchClear} onClick={() => setFilter({ search: '' })}>
+              <X size={14} />
             </button>
           )}
         </div>
-        <Button size="icon" variant="ghost" className="h-8 w-8 shrink-0" onClick={onNewFolder}>
-          <FolderPlus className="h-4 w-4" />
+        <Button size="icon" variant="ghost" style={{ height: 32, width: 32, flexShrink: 0 }} onClick={onNewFolder}>
+          <FolderPlus size={16} />
         </Button>
         <Button
           size="icon"
           variant={filter.showPinnedOnly ? 'default' : 'ghost'}
-          className="h-8 w-8 shrink-0"
+          style={{ height: 32, width: 32, flexShrink: 0 }}
           onClick={() => setFilter({ showPinnedOnly: !filter.showPinnedOnly })}
           title="Show pinned only"
         >
-          <Pin className="h-3.5 w-3.5" />
+          <Pin size={14} />
         </Button>
       </div>
-      <div className="flex items-center gap-2">
-        <Select
-          value={filter.sortField}
-          onValueChange={(v) => setFilter({ sortField: v as SortField })}
-        >
-          <SelectTrigger className="h-7 text-xs flex-1">
+      <div className={s.sortRow}>
+        <Select value={filter.sortField} onValueChange={(v) => setFilter({ sortField: v as SortField })}>
+          <SelectTrigger style={{ height: 28, fontSize: 11, flex: 1 }}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -81,31 +79,22 @@ export function ExplorerToolbar({ onNewFolder }: { onNewFolder: () => void }) {
             ))}
           </SelectContent>
         </Select>
-        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={toggleSortDir}>
-          {filter.sortDirection === 'asc' ? <SortAsc className="h-3.5 w-3.5" /> : <SortDesc className="h-3.5 w-3.5" />}
+        <Button size="icon" variant="ghost" style={{ height: 28, width: 28 }} onClick={toggleSortDir}>
+          {filter.sortDirection === 'asc' ? <SortAsc size={14} /> : <SortDesc size={14} />}
         </Button>
       </div>
-      <div className="flex flex-wrap gap-1">
+      <div className={s.filterRow}>
         {FILE_TYPES.map((t) => (
           <button
             key={t.value}
             onClick={() => toggleType(t.value)}
-            className={`px-2 py-0.5 rounded-full text-[10px] font-medium transition-colors border ${
-              filter.types.includes(t.value)
-                ? 'bg-violet-600/20 border-violet-500/40 text-violet-300'
-                : 'border-zinc-700 text-zinc-500 hover:text-zinc-300'
-            }`}
+            className={[s.filterPill, filter.types.includes(t.value) ? s.active : s.inactive].join(' ')}
           >
             {t.label}
           </button>
         ))}
         {filter.types.length > 0 && (
-          <button
-            onClick={() => setFilter({ types: [] })}
-            className="px-2 py-0.5 rounded-full text-[10px] text-zinc-600 hover:text-zinc-400"
-          >
-            Clear
-          </button>
+          <button className={s.filterClear} onClick={() => setFilter({ types: [] })}>Clear</button>
         )}
       </div>
     </div>

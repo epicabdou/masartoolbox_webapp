@@ -27,12 +27,12 @@ export default function PDFPage() {
 
   if (!file) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-8">
-        <div className="w-full max-w-lg space-y-4">
-          <div className="text-center mb-6">
-            <FileText className="h-12 w-12 text-violet-400 mx-auto mb-3" />
-            <h2 className="text-xl font-semibold text-zinc-100">PDF Manager</h2>
-            <p className="text-sm text-zinc-400 mt-1">Upload a PDF to get started with all tools</p>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: 32 }}>
+        <div style={{ width: '100%', maxWidth: 480, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ textAlign: 'center', marginBottom: 8 }}>
+            <FileText size={48} color="var(--accent-light)" style={{ margin: '0 auto 12px' }} />
+            <h2 style={{ fontSize: 20, fontWeight: 600, color: 'var(--text-primary)' }}>PDF Manager</h2>
+            <p style={{ fontSize: 13, color: 'var(--text-muted)', marginTop: 4 }}>Upload a PDF to get started with all tools</p>
           </div>
           <DropZone
             onFiles={onFiles}
@@ -41,9 +41,9 @@ export default function PDFPage() {
             sublabel="Supports all PDF versions · Processing happens locally in your browser"
           />
         </div>
-        <div className="mt-8 w-full max-w-lg">
-          <p className="text-xs text-zinc-600 text-center mb-4">Or use the Merger tool without uploading first</p>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5">
+        <div style={{ marginTop: 32, width: '100%', maxWidth: 480 }}>
+          <p style={{ fontSize: 11, color: 'var(--text-faint)', textAlign: 'center', marginBottom: 16 }}>Or use the Merger tool without uploading first</p>
+          <div style={{ borderRadius: 'var(--radius-xl)', border: '1px solid var(--border)', background: 'rgba(24,24,27,0.4)', padding: 20 }}>
             <PDFMerger />
           </div>
         </div>
@@ -52,38 +52,36 @@ export default function PDFPage() {
   }
 
   return (
-    <div className="flex h-full">
-      <div className="flex-1 flex flex-col border-r border-zinc-800 min-w-0">
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-zinc-800 bg-zinc-900/40">
-          <FileText className="h-4 w-4 text-violet-400 shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-zinc-200 truncate">{file.name}</p>
-            <p className="text-xs text-zinc-500">{formatBytes(file.size)} · {totalPages || '…'} pages</p>
+    <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderRight: '1px solid var(--border)', minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'rgba(24,24,27,0.4)' }}>
+          <FileText size={16} color="var(--accent-light)" style={{ flexShrink: 0 }} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</p>
+            <p style={{ fontSize: 11, color: 'var(--text-faint)' }}>{formatBytes(file.size)} · {totalPages || '…'} pages</p>
           </div>
-          <Button size="icon" variant="ghost" onClick={() => setFile(null)}>
-            <X className="h-4 w-4" />
-          </Button>
+          <Button size="icon" variant="ghost" onClick={() => setFile(null)}><X size={16} /></Button>
         </div>
-        <div className="flex-1 min-h-0">
+        <div style={{ flex: 1, minHeight: 0 }}>
           <PDFViewer data={file.buffer} onPageCount={setTotalPages} className="h-full" />
         </div>
       </div>
 
-      <div className="w-80 shrink-0 overflow-y-auto bg-zinc-950 border-l border-zinc-800">
-        <div className="p-4">
+      <div style={{ width: 320, flexShrink: 0, overflowY: 'auto', background: 'var(--bg-base)', borderLeft: '1px solid var(--border)' }}>
+        <div style={{ padding: 16 }}>
           <Tabs defaultValue="split">
-            <TabsList className="w-full flex flex-wrap gap-1 h-auto">
-              <TabsTrigger value="split" className="flex-1 text-xs">Split</TabsTrigger>
-              <TabsTrigger value="merge" className="flex-1 text-xs">Merge</TabsTrigger>
-              <TabsTrigger value="pages" className="flex-1 text-xs">Pages</TabsTrigger>
-              <TabsTrigger value="forms" className="flex-1 text-xs">Forms</TabsTrigger>
-              <TabsTrigger value="annotate" className="flex-1 text-xs">Annotate</TabsTrigger>
+            <TabsList style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: 4, height: 'auto' }}>
+              <TabsTrigger value="split" style={{ flex: 1, fontSize: 11 }}>Split</TabsTrigger>
+              <TabsTrigger value="merge" style={{ flex: 1, fontSize: 11 }}>Merge</TabsTrigger>
+              <TabsTrigger value="pages" style={{ flex: 1, fontSize: 11 }}>Pages</TabsTrigger>
+              <TabsTrigger value="forms" style={{ flex: 1, fontSize: 11 }}>Forms</TabsTrigger>
+              <TabsTrigger value="annotate" style={{ flex: 1, fontSize: 11 }}>Annotate</TabsTrigger>
             </TabsList>
             <TabsContent value="split">
               {totalPages > 0 ? (
                 <PDFSplitter data={file.buffer} filename={file.name} totalPages={totalPages} />
               ) : (
-                <p className="text-sm text-zinc-500 text-center py-8">Loading page count…</p>
+                <p style={{ fontSize: 13, color: 'var(--text-faint)', textAlign: 'center', padding: 32 }}>Loading page count…</p>
               )}
             </TabsContent>
             <TabsContent value="merge">
@@ -93,7 +91,7 @@ export default function PDFPage() {
               {totalPages > 0 ? (
                 <PDFPageManipulator data={file.buffer} filename={file.name} totalPages={totalPages} />
               ) : (
-                <p className="text-sm text-zinc-500 text-center py-8">Loading page count…</p>
+                <p style={{ fontSize: 13, color: 'var(--text-faint)', textAlign: 'center', padding: 32 }}>Loading page count…</p>
               )}
             </TabsContent>
             <TabsContent value="forms">
@@ -103,7 +101,7 @@ export default function PDFPage() {
               {totalPages > 0 ? (
                 <PDFAnnotator data={file.buffer} filename={file.name} totalPages={totalPages} />
               ) : (
-                <p className="text-sm text-zinc-500 text-center py-8">Loading…</p>
+                <p style={{ fontSize: 13, color: 'var(--text-faint)', textAlign: 'center', padding: 32 }}>Loading…</p>
               )}
             </TabsContent>
           </Tabs>

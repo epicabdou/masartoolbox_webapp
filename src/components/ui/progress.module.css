@@ -1,0 +1,2 @@
+.root { position: relative; height: 8px; width: 100%; overflow: hidden; border-radius: var(--radius-full); background: var(--bg-raised); }
+.indicator { height: 100%; width: 100%; background: var(--accent); transition: transform 0.3s ease; }

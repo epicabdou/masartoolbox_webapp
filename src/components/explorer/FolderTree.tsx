@@ -2,11 +2,10 @@
 
 import React, { useState } from 'react';
 import { ChevronRight, Pin, Trash2, FolderPlus, Edit2, Check, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useExplorerStore } from '@/lib/store';
 import { VirtualFolder } from '@/types';
-import { cn } from '@/lib/utils';
 import { FileIcon } from './FileIcon';
+import s from './explorer.module.css';
 
 interface FolderNodeProps {
   folder: VirtualFolder;
@@ -30,52 +29,53 @@ function FolderNode({ folder, level, allFolders }: FolderNodeProps) {
   return (
     <div>
       <div
-        className={cn(
-          'group flex items-center gap-1 rounded-md px-1 py-1 cursor-pointer transition-colors',
-          isActive ? 'bg-violet-600/15 text-violet-300' : 'hover:bg-zinc-800/60 text-zinc-400'
-        )}
-        style={{ paddingLeft: `${level * 12 + 4}px` }}
+        className={[s.treeItem, isActive ? s.active : s.inactive].join(' ')}
+        style={{ paddingLeft: level * 12 + 4 }}
         onClick={() => setCurrentFolder(folder.id)}
       >
         <button
-          className="p-0.5 hover:text-zinc-200"
+          className={s.treeExpandBtn}
           onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
         >
-          <ChevronRight className={cn('h-3 w-3 transition-transform', expanded && 'rotate-90')} />
+          <ChevronRight size={12} style={{ transform: expanded ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s' }} />
         </button>
-        <FileIcon type="folder" isOpen={expanded && isActive} className="h-4 w-4" />
+        <FileIcon type="folder" isOpen={expanded && isActive} size={16} />
         {editing ? (
           <input
             autoFocus
-            className="flex-1 bg-zinc-800 text-zinc-100 text-xs rounded px-1 py-0.5 outline-none"
+            className={s.treeEditInput}
             value={editName}
             onChange={(e) => setEditName(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') saveEdit(); if (e.key === 'Escape') setEditing(false); }}
             onClick={(e) => e.stopPropagation()}
           />
         ) : (
-          <span className="flex-1 text-xs truncate">{folder.name}</span>
+          <span className={s.treeLabel}>{folder.name}</span>
         )}
-        {folder.pinned && <Pin className="h-2.5 w-2.5 text-yellow-500 shrink-0" />}
-        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0">
+        {folder.pinned && <Pin size={10} color="var(--clr-yellow)" style={{ flexShrink: 0 }} />}
+        <div className={s.treeActions}>
           {editing ? (
             <>
-              <button onClick={(e) => { e.stopPropagation(); saveEdit(); }}><Check className="h-3 w-3 text-green-400" /></button>
-              <button onClick={(e) => { e.stopPropagation(); setEditing(false); }}><X className="h-3 w-3 text-zinc-500" /></button>
+              <button className={s.treeActionBtn} onClick={(e) => { e.stopPropagation(); saveEdit(); }}>
+                <Check size={12} color="var(--clr-green)" />
+              </button>
+              <button className={s.treeActionBtn} onClick={(e) => { e.stopPropagation(); setEditing(false); }}>
+                <X size={12} color="var(--text-faint)" />
+              </button>
             </>
           ) : (
             <>
-              <button onClick={(e) => { e.stopPropagation(); setEditing(true); setEditName(folder.name); }}>
-                <Edit2 className="h-3 w-3" />
+              <button className={s.treeActionBtn} onClick={(e) => { e.stopPropagation(); setEditing(true); setEditName(folder.name); }}>
+                <Edit2 size={12} />
               </button>
-              <button onClick={(e) => { e.stopPropagation(); addFolder('New Folder', folder.id); }}>
-                <FolderPlus className="h-3 w-3" />
+              <button className={s.treeActionBtn} onClick={(e) => { e.stopPropagation(); addFolder('New Folder', folder.id); }}>
+                <FolderPlus size={12} />
               </button>
-              <button onClick={(e) => { e.stopPropagation(); togglePin(folder.id, true); }}>
-                <Pin className={cn('h-3 w-3', folder.pinned && 'text-yellow-500')} />
+              <button className={s.treeActionBtn} onClick={(e) => { e.stopPropagation(); togglePin(folder.id, true); }}>
+                <Pin size={12} color={folder.pinned ? 'var(--clr-yellow)' : undefined} />
               </button>
-              <button onClick={(e) => { e.stopPropagation(); removeFolder(folder.id); }}>
-                <Trash2 className="h-3 w-3 text-red-400" />
+              <button className={s.treeActionBtn} onClick={(e) => { e.stopPropagation(); removeFolder(folder.id); }}>
+                <Trash2 size={12} color="var(--clr-red)" />
               </button>
             </>
           )}
@@ -94,44 +94,35 @@ export function FolderTree() {
   const pinnedFolders = folders.filter((f) => f.pinned);
 
   return (
-    <div className="p-2 space-y-1">
+    <div className={s.treeRoot}>
       {pinnedFolders.length > 0 && (
-        <div className="mb-2">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-600 px-2 py-1 font-medium">Pinned</p>
+        <div style={{ marginBottom: 8 }}>
+          <p className={s.pinnedLabel}>Pinned</p>
           {pinnedFolders.map((f) => (
             <button
               key={f.id}
               onClick={() => setCurrentFolder(f.id)}
-              className={cn(
-                'flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-xs transition-colors',
-                currentFolderId === f.id ? 'bg-violet-600/15 text-violet-300' : 'text-zinc-400 hover:bg-zinc-800/60'
-              )}
+              className={[s.treePinnedBtn, currentFolderId === f.id ? s.active : s.inactive].join(' ')}
             >
-              <Pin className="h-3 w-3 text-yellow-500 shrink-0" />
+              <Pin size={12} color="var(--clr-yellow)" style={{ flexShrink: 0 }} />
               {f.name}
             </button>
           ))}
-          <div className="border-t border-zinc-800 my-2" />
+          <hr className={s.pinnedDivider} />
         </div>
       )}
       <button
         onClick={() => setCurrentFolder(null)}
-        className={cn(
-          'flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-xs transition-colors',
-          currentFolderId === null ? 'bg-violet-600/15 text-violet-300' : 'text-zinc-400 hover:bg-zinc-800/60'
-        )}
+        className={[s.treeAllFiles, currentFolderId === null ? s.active : s.inactive].join(' ')}
       >
-        <FileIcon type="folder" className="h-4 w-4" />
+        <FileIcon type="folder" size={16} />
         All Files
       </button>
       {roots.map((f) => (
         <FolderNode key={f.id} folder={f} level={0} allFolders={folders} />
       ))}
-      <button
-        onClick={() => addFolder('New Folder', null)}
-        className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-xs text-zinc-600 hover:text-zinc-400 hover:bg-zinc-800/40 transition-colors mt-2"
-      >
-        <FolderPlus className="h-3.5 w-3.5" />
+      <button onClick={() => addFolder('New Folder', null)} className={s.treeNewFolder}>
+        <FolderPlus size={14} />
         New Folder
       </button>
     </div>

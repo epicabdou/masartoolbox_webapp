@@ -1,29 +1,21 @@
 import React from 'react';
-import {
-  FileText,
-  FileSpreadsheet,
-  FileCode,
-  Image,
-  Folder,
-  FolderOpen,
-  File,
-} from 'lucide-react';
+import { FileText, FileSpreadsheet, FileCode, Image, Folder, FolderOpen, File } from 'lucide-react';
 import { FileType } from '@/types';
-import { cn, fileTypeColor } from '@/lib/utils';
+import { fileTypeColor } from '@/lib/utils';
 
 interface FileIconProps {
   type: FileType;
   isOpen?: boolean;
+  size?: number;
   className?: string;
+  style?: React.CSSProperties;
 }
 
-export function FileIcon({ type, isOpen, className }: FileIconProps) {
+export function FileIcon({ type, isOpen, size = 16, className, style }: FileIconProps) {
   const color = fileTypeColor(type);
-  const props = { className: cn('shrink-0', color, className) };
+  const props = { size, className, style: { color, flexShrink: 0, ...style } };
 
-  if (type === 'folder') {
-    return isOpen ? <FolderOpen {...props} /> : <Folder {...props} />;
-  }
+  if (type === 'folder') return isOpen ? <FolderOpen {...props} /> : <Folder {...props} />;
   if (type === 'pdf') return <FileText {...props} />;
   if (type === 'docx' || type === 'doc') return <FileText {...props} />;
   if (type === 'markdown') return <FileCode {...props} />;

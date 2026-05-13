@@ -1,0 +1,93 @@
+/* Shared styles for all PDF tool panels */
+.hint { font-size: 11px; color: var(--text-faint); }
+
+/* Range row */
+.rangeRow { display: flex; align-items: center; gap: 8px; }
+.rangeLabel { font-size: 11px; color: var(--text-faint); width: 50px; }
+.rangeSep { color: var(--text-faint); font-size: 13px; }
+.rangePages { font-size: 11px; color: var(--text-faint); }
+
+/* File list item */
+.fileItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 12px;
+  font-size: 13px;
+  transition: border-color 0.15s, background 0.15s;
+  cursor: grab;
+}
+.fileItem:active { cursor: grabbing; }
+.fileItem.dragOver { border-color: var(--accent); background: var(--accent-dim); }
+.fileItem.normal  { background: rgba(24,24,27,0.5); }
+.fileName { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); }
+.fileSize { font-size: 11px; color: var(--text-faint); flex-shrink: 0; }
+
+/* Page row */
+.pageRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 8px 12px;
+  font-size: 12px;
+  transition: opacity 0.15s;
+}
+.pageRow.deleted { opacity: 0.4; }
+.pageRow.normal  { background: rgba(24,24,27,0.4); }
+.pageNum  { color: var(--text-muted); width: 20px; font-size: 11px; }
+.pageName { flex: 1; color: var(--text-secondary); }
+.pageActions { display: flex; gap: 4px; }
+
+/* scroll list */
+.scrollList { display: flex; flex-direction: column; gap: 4px; max-height: 288px; overflow-y: auto; padding-right: 4px; }
+.fieldList  { display: flex; flex-direction: column; gap: 8px; max-height: 288px; overflow-y: auto; padding-right: 4px; }
+
+.fieldLabel { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+.fieldType  { font-size: 10px; color: var(--text-faint); }
+
+/* Annotation toolbar */
+.annoTools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.colorRow  { display: flex; align-items: center; gap: 6px; margin-left: 8px; }
+.colorDot {
+  height: 18px; width: 18px; border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.colorDot.selected { transform: scale(1.25); border-color: #fff; }
+
+.pageNumbers { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.pageNum2 {
+  height: 24px; width: 24px; border-radius: var(--radius);
+  font-size: 11px; font-weight: 500;
+  cursor: pointer; border: none; font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.pageNum2.active { background: var(--accent); color: #fff; }
+.pageNum2.inactive { background: var(--bg-raised); color: var(--text-muted); }
+.pageNum2.inactive:hover { background: var(--border); }
+
+.annoCanvas { display: block; max-width: 100%; cursor: crosshair; }
+.annoList { display: flex; flex-direction: column; gap: 4px; }
+.annoItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+  padding: 4px 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.annoDot  { height: 10px; width: 10px; border-radius: var(--radius-sm); flex-shrink: 0; }
+.annoType { text-transform: capitalize; }
+.annoComment { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-faint); }
+.annoSpacer { flex: 1; }
+
+.annoCanvas-wrap { overflow: auto; border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); background: rgba(24,24,27,0.3); }
+
+.grip { color: var(--text-faint); flex-shrink: 0; }

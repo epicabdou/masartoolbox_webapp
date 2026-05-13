@@ -1,9 +1,8 @@
 'use client';
-
 import React, { useCallback } from 'react';
 import { useDropzone, type DropzoneOptions } from 'react-dropzone';
 import { UploadCloud } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import s from './dropzone.module.css';
 
 interface DropZoneProps extends Omit<DropzoneOptions, 'onDrop'> {
   onFiles: (files: File[]) => void;
@@ -14,34 +13,27 @@ interface DropZoneProps extends Omit<DropzoneOptions, 'onDrop'> {
 }
 
 export function DropZone({
-  onFiles,
-  label = 'Drop files here or click to browse',
-  sublabel,
-  className,
-  compact = false,
-  ...opts
+  onFiles, label = 'Drop files here or click to browse',
+  sublabel, className = '', compact = false, ...opts
 }: DropZoneProps) {
   const onDrop = useCallback((accepted: File[]) => onFiles(accepted), [onFiles]);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, ...opts });
 
+  const zoneClass = [
+    s.zone,
+    compact ? s.compact : s.normal,
+    isDragActive ? s.active : '',
+    className,
+  ].filter(Boolean).join(' ');
+
   return (
-    <div
-      {...getRootProps()}
-      className={cn(
-        'flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-700 bg-zinc-900/40 transition-colors hover:border-violet-500/50 hover:bg-zinc-900/70',
-        isDragActive && 'dropzone-active',
-        compact ? 'p-4 gap-1' : 'p-10 gap-3',
-        className
-      )}
-    >
+    <div {...getRootProps()} className={zoneClass}>
       <input {...getInputProps()} />
-      <UploadCloud className={cn('text-zinc-500', compact ? 'h-5 w-5' : 'h-9 w-9', isDragActive && 'text-violet-400')} />
-      <p className={cn('text-center font-medium', compact ? 'text-xs text-zinc-400' : 'text-sm text-zinc-300')}>
+      <UploadCloud size={compact ? 18 : 36} className={s.icon} />
+      <p className={[s.label, compact ? s.compact : s.normal].join(' ')}>
         {isDragActive ? 'Release to upload' : label}
       </p>
-      {sublabel && !compact && (
-        <p className="text-xs text-zinc-500 text-center">{sublabel}</p>
-      )}
+      {sublabel && !compact && <p className={s.sub}>{sublabel}</p>}
     </div>
   );
 }

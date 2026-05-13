@@ -1,0 +1,16 @@
+.header {
+  display: flex;
+  height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(10,10,11,0.8);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  flex-shrink: 0;
+}
+.title { font-size: 14px; font-weight: 600; color: var(--text-primary); line-height: 1; }
+.desc  { font-size: 11px; color: var(--text-faint); margin-top: 2px; }

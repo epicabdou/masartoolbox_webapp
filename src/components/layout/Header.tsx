@@ -1,6 +1,6 @@
 'use client';
-
 import { usePathname } from 'next/navigation';
+import s from './Header.module.css';
 
 const titles: Record<string, { title: string; desc: string }> = {
   '/': { title: 'Dashboard', desc: 'Overview and quick access to all tools' },
@@ -11,16 +11,13 @@ const titles: Record<string, { title: string; desc: string }> = {
 
 export function Header() {
   const pathname = usePathname();
-  const key = Object.keys(titles)
-    .filter((k) => k !== '/')
-    .find((k) => pathname.startsWith(k)) ?? '/';
+  const key = Object.keys(titles).filter((k) => k !== '/').find((k) => pathname.startsWith(k)) ?? '/';
   const { title, desc } = titles[key] ?? titles['/'];
-
   return (
-    <header className="flex h-14 items-center justify-between border-b border-zinc-800 bg-zinc-950/80 px-6 backdrop-blur-sm sticky top-0 z-10">
+    <header className={s.header}>
       <div>
-        <h1 className="text-base font-semibold text-zinc-100 leading-none">{title}</h1>
-        <p className="text-xs text-zinc-500 mt-0.5">{desc}</p>
+        <h1 className={s.title}>{title}</h1>
+        <p className={s.desc}>{desc}</p>
       </div>
     </header>
   );

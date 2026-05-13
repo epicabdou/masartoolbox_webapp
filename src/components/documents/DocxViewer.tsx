@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import s from './documents.module.css';
 
 interface DocxViewerProps {
   buffer: ArrayBuffer;
@@ -29,24 +30,22 @@ export function DocxViewer({ buffer }: DocxViewerProps) {
   }, [buffer]);
 
   if (loading) return (
-    <div className="flex items-center justify-center h-40 text-zinc-500 text-sm gap-2">
-      <div className="h-4 w-4 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
+    <div className={s.spinner}>
+      <div className={s.spinIcon} />
       Converting document…
     </div>
   );
 
   if (error) return (
-    <div className="text-red-400 text-sm p-4 bg-red-500/10 rounded-lg border border-red-500/20">
-      Failed to render: {error}
-    </div>
+    <div className={s.errorBox}>Failed to render: {error}</div>
   );
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea style={{ height: '100%' }}>
       <div
-        className="prose prose-invert prose-sm max-w-none p-6"
+        className="prose"
         dangerouslySetInnerHTML={{ __html: html }}
-        style={{ fontSize: '14px', lineHeight: 1.7 }}
+        style={{ padding: 24, fontSize: 14, lineHeight: 1.7 }}
       />
     </ScrollArea>
   );

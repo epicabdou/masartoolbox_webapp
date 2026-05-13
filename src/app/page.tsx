@@ -4,13 +4,15 @@ import {
   Highlighter, FormInput, Eye, RefreshCw, Network, Search,
   Pin, Filter, ArrowRight, Zap
 } from 'lucide-react';
+import s from './home.module.css';
 
 const modules = [
   {
     href: '/pdf',
     icon: FileText,
-    color: 'text-red-400',
-    bg: 'bg-red-500/10 border-red-500/20',
+    color: 'var(--clr-red)',
+    iconBg: 'rgba(239,68,68,0.1)',
+    iconBd: 'rgba(239,68,68,0.2)',
     title: 'PDF Manager',
     desc: 'Complete PDF manipulation suite',
     features: [
@@ -24,8 +26,9 @@ const modules = [
   {
     href: '/documents',
     icon: Files,
-    color: 'text-blue-400',
-    bg: 'bg-blue-500/10 border-blue-500/20',
+    color: 'var(--clr-blue)',
+    iconBg: 'var(--clr-blue-bg)',
+    iconBd: 'rgba(59,130,246,0.2)',
     title: 'Document Studio',
     desc: 'Full document management toolkit',
     features: [
@@ -39,8 +42,9 @@ const modules = [
   {
     href: '/explorer',
     icon: FolderOpen,
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/10 border-amber-500/20',
+    color: 'var(--clr-amber)',
+    iconBg: 'var(--clr-amber-bg)',
+    iconBd: 'rgba(245,158,11,0.2)',
     title: 'File Explorer',
     desc: 'Persistent file organization system',
     features: [
@@ -61,54 +65,47 @@ const stats = [
 
 export default function HomePage() {
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-8">
-      {/* Hero */}
-      <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-8 flex items-center gap-6">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-violet-600 shadow-lg shadow-violet-600/25">
-          <Zap className="h-7 w-7 text-white" />
+    <div className={s.page}>
+      <div className={s.hero}>
+        <div className={s.heroIcon}>
+          <Zap size={28} color="#fff" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-zinc-100">Masar Toolbox</h1>
-          <p className="text-zinc-400 mt-1 text-sm max-w-xl">
+          <h1 className={s.heroTitle}>Masar Toolbox</h1>
+          <p className={s.heroDesc}>
             A high-intensity document and media manipulation suite. Everything runs locally in your
             browser — your files never leave your device.
           </p>
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
-        {stats.map((s) => (
-          <div key={s.label} className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-4">
-            <p className="text-3xl font-bold text-violet-400">{s.value}</p>
-            <p className="text-sm font-medium text-zinc-300 mt-1">{s.label}</p>
-            <p className="text-xs text-zinc-600 mt-0.5">{s.sub}</p>
+      <div className={s.stats}>
+        {stats.map((st) => (
+          <div key={st.label} className={s.statCard}>
+            <p className={s.statValue}>{st.value}</p>
+            <p className={s.statLabel}>{st.label}</p>
+            <p className={s.statSub}>{st.sub}</p>
           </div>
         ))}
       </div>
 
-      {/* Modules */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className={s.modules}>
         {modules.map((mod) => (
-          <Link
-            key={mod.href}
-            href={mod.href}
-            className="group rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5 flex flex-col gap-4 hover:border-zinc-700 hover:bg-zinc-900/70 transition-all"
-          >
-            <div className="flex items-start justify-between">
-              <div className={`flex h-10 w-10 items-center justify-center rounded-xl border ${mod.bg}`}>
-                <mod.icon className={`h-5 w-5 ${mod.color}`} />
+          <Link key={mod.href} href={mod.href} className={s.moduleCard}>
+            <div className={s.moduleCardTop}>
+              <div className={s.moduleIcon} style={{ background: mod.iconBg, borderColor: mod.iconBd }}>
+                <mod.icon size={20} color={mod.color} />
               </div>
-              <ArrowRight className="h-4 w-4 text-zinc-700 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all" />
+              <ArrowRight size={16} className={s.moduleArrow} />
             </div>
             <div>
-              <h2 className="text-base font-semibold text-zinc-100">{mod.title}</h2>
-              <p className="text-xs text-zinc-500 mt-0.5">{mod.desc}</p>
+              <h2 className={s.moduleTitle}>{mod.title}</h2>
+              <p className={s.moduleDesc}>{mod.desc}</p>
             </div>
-            <ul className="space-y-1.5 mt-auto">
+            <ul className={s.featureList}>
               {mod.features.map((f) => (
-                <li key={f.label} className="flex items-center gap-2 text-xs text-zinc-500">
-                  <f.icon className="h-3 w-3 text-zinc-600 shrink-0" />
+                <li key={f.label} className={s.featureItem}>
+                  <f.icon size={12} color="var(--text-faint)" style={{ flexShrink: 0 }} />
                   {f.label}
                 </li>
               ))}
@@ -117,20 +114,19 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* Quick start */}
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 p-5">
-        <h3 className="text-sm font-semibold text-zinc-300 mb-3">Quick Start</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-zinc-500">
-          <div className="space-y-1">
-            <p className="font-medium text-zinc-400">PDF Manager</p>
+      <div className={s.quickStart}>
+        <h3 className={s.quickTitle}>Quick Start</h3>
+        <div className={s.quickGrid}>
+          <div className={s.quickSection}>
+            <p className={s.quickSectionTitle}>PDF Manager</p>
             <p>Upload any PDF → use the right-side panel to split by page range, merge multiple PDFs, rotate/reorder pages, fill forms, or draw annotations.</p>
           </div>
-          <div className="space-y-1">
-            <p className="font-medium text-zinc-400">Document Studio</p>
+          <div className={s.quickSection}>
+            <p className={s.quickSectionTitle}>Document Studio</p>
             <p>Drop DOCX, Markdown, or spreadsheet files to view them instantly. Switch to Convert tab for batch format conversion. Use Org Chart to build SVG org trees from JSON.</p>
           </div>
-          <div className="space-y-1">
-            <p className="font-medium text-zinc-400">File Explorer</p>
+          <div className={s.quickSection}>
+            <p className={s.quickSectionTitle}>File Explorer</p>
             <p>Create folders, drag-and-drop files in, pin important folders for quick access. Filter by type, search by name or tag, and sort any way you like.</p>
           </div>
         </div>

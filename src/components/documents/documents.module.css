@@ -1,0 +1,54 @@
+/* Shared styles for document components */
+
+/* Loading spinner */
+.spinner { display: flex; align-items: center; justify-content: center; height: 160px; color: var(--text-faint); font-size: 13px; gap: 8px; }
+.spinIcon { height: 16px; width: 16px; border-radius: 50%; border: 2px solid var(--accent); border-top-color: transparent; animation: spin 0.6s linear infinite; flex-shrink: 0; }
+.errorBox { color: var(--clr-red); font-size: 13px; padding: 16px; background: var(--clr-red-bg); border-radius: var(--radius-lg); border: 1px solid var(--clr-red-bd); }
+
+/* MarkdownEditor */
+.mdRoot { display: flex; flex-direction: column; height: 100%; }
+.mdToolbar { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-bottom: 1px solid var(--border); background: rgba(9,9,11,0.6); }
+.mdSpacer { flex: 1; }
+.mdBody { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.mdTextarea {
+  width: 100%; flex: 1; background: transparent; color: var(--text-secondary);
+  font-family: var(--font-geist-mono), monospace; font-size: 13px;
+  resize: none; outline: none; padding: 20px; line-height: 1.7; border: none;
+}
+
+/* SpreadsheetViewer */
+.sheetRoot { display: flex; flex-direction: column; height: 100%; }
+.sheetToolbar { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-bottom: 1px solid var(--border); background: rgba(9,9,11,0.6); flex-wrap: wrap; }
+.sheetSpacer { flex: 1; }
+.sheetTab { padding: 4px 12px; border-radius: var(--radius); font-size: 11px; font-weight: 500; transition: background 0.15s, color 0.15s; cursor: pointer; border: none; font-family: inherit; background: none; }
+.sheetTab.active { background: var(--bg-raised); color: var(--text-primary); }
+.sheetTab.inactive { color: var(--text-faint); background: none; }
+.sheetTab.inactive:hover { color: var(--text-secondary); }
+.sheetTable { width: 100%; font-size: 11px; border-collapse: collapse; }
+.sheetThRowNum { width: 40px; padding: 8px; color: var(--text-faint); font-family: var(--font-geist-mono), monospace; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border-subtle); text-align: right; }
+.sheetTh { padding: 8px 12px; text-align: left; color: var(--text-muted); font-weight: 500; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border-subtle); min-width: 100px; max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sheetTr { transition: background 0.1s; }
+.sheetTr:hover { background: rgba(39,39,42,0.3); }
+.sheetTdRowNum { padding: 6px 8px; color: var(--text-faint); font-family: var(--font-geist-mono), monospace; border-right: 1px solid var(--border-subtle); text-align: right; }
+.sheetTd { padding: 6px 12px; color: var(--text-secondary); border-right: 1px solid rgba(63,63,70,0.3); max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sheetEmpty { text-align: center; color: var(--text-faint); font-size: 13px; padding: 48px; }
+.sheetFooter { padding: 8px 16px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-faint); }
+
+/* OrgChartGenerator */
+.orgRoot { display: flex; flex-direction: column; height: 100%; gap: 16px; padding: 16px; }
+.orgToolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.orgSpacer { flex: 1; }
+.orgJsonArea { display: flex; flex-direction: column; gap: 8px; }
+.orgTextarea { width: 100%; height: 208px; font-family: var(--font-geist-mono), monospace; font-size: 11px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px; color: var(--text-secondary); outline: none; resize: none; }
+.orgTextarea:focus { border-color: var(--accent); }
+.orgError { color: var(--clr-red); font-size: 11px; }
+.orgJsonActions { display: flex; gap: 8px; }
+.orgHint { font-size: 11px; color: var(--text-faint); }
+.orgSvgWrap { flex: 1; overflow: auto; background: rgba(9,9,11,0.4); border-radius: var(--radius-xl); border: 1px solid var(--border); }
+
+/* DocumentConverter */
+.convRow { display: flex; align-items: center; gap: 12px; }
+.convLabel { flex: 1; font-size: 13px; color: var(--text-muted); }
+.convResultItem { display: flex; align-items: center; gap: 8px; border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 8px 12px; font-size: 13px; }
+.convResultName { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-secondary); }
+.convResultsLabel { font-size: 11px; color: var(--text-faint); font-weight: 500; }

@@ -2,15 +2,13 @@
 
 import React, { useMemo, useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import {
-  Pin, Trash2, Download, MoreVertical, Tag, X, FolderOpen as FolderInput
-} from 'lucide-react';
+import { Pin, Trash2, Download, MoreVertical, Tag, X, FolderOpen as FolderInput } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { useExplorerStore } from '@/lib/store';
 import { VirtualFile } from '@/types';
-import { cn, formatBytes, humanDate, downloadBlob, fileToArrayBuffer, fileToDataUrl, fileToText, getFileType } from '@/lib/utils';
+import { formatBytes, humanDate, downloadBlob, fileToArrayBuffer, fileToDataUrl, fileToText, getFileType } from '@/lib/utils';
 import { FileIcon } from './FileIcon';
+import s from './explorer.module.css';
 
 interface FileCardProps {
   file: VirtualFile;
@@ -20,7 +18,7 @@ interface FileCardProps {
 }
 
 function FileCard({ file, selected, onSelect, onOpen }: FileCardProps) {
-  const { togglePin, removeFile, updateFile, folders } = useExplorerStore();
+  const { togglePin, removeFile, updateFile } = useExplorerStore();
   const [menuOpen, setMenuOpen] = useState(false);
   const [tagging, setTagging] = useState(false);
   const [tagInput, setTagInput] = useState('');
@@ -47,42 +45,35 @@ function FileCard({ file, selected, onSelect, onOpen }: FileCardProps) {
 
   return (
     <div
-      className={cn(
-        'group relative flex flex-col rounded-xl border p-3 cursor-pointer transition-all select-none',
-        selected
-          ? 'border-violet-500 bg-violet-500/8 shadow-[0_0_0_2px_rgba(124,58,237,0.3)]'
-          : 'border-zinc-800 bg-zinc-900/40 hover:border-zinc-700 hover:bg-zinc-900/70'
-      )}
+      className={[s.fileCard, selected ? s.selected : ''].join(' ')}
       onClick={(e) => onSelect(file.id, e.metaKey || e.ctrlKey || e.shiftKey)}
       onDoubleClick={() => onOpen(file)}
     >
-      <div className="flex items-start justify-between mb-3">
-        <FileIcon type={file.type} className="h-8 w-8" />
-        <div className="flex items-center gap-1">
-          {file.pinned && <Pin className="h-3 w-3 text-yellow-500" />}
-          <div className="relative">
+      <div className={s.fileCardHeader}>
+        <FileIcon type={file.type} size={32} />
+        <div className={s.fileCardMeta}>
+          {file.pinned && <Pin size={12} color="var(--clr-yellow)" />}
+          <div className={s.fileMenuWrap}>
             <Button
               size="icon"
               variant="ghost"
-              className="h-6 w-6 opacity-0 group-hover:opacity-100"
+              style={{ height: 24, width: 24 }}
+              className={s.fileMenuBtn}
               onClick={(e) => { e.stopPropagation(); setMenuOpen((v) => !v); }}
             >
-              <MoreVertical className="h-3.5 w-3.5" />
+              <MoreVertical size={14} />
             </Button>
             {menuOpen && (
-              <div
-                className="absolute right-0 top-7 z-20 min-w-[140px] rounded-lg border border-zinc-700 bg-zinc-900 shadow-xl py-1"
-                onMouseLeave={() => setMenuOpen(false)}
-              >
+              <div className={s.fileMenu} onMouseLeave={() => setMenuOpen(false)}>
                 {[
-                  { icon: <Pin className="h-3.5 w-3.5" />, label: file.pinned ? 'Unpin' : 'Pin', onClick: () => togglePin(file.id) },
-                  { icon: <Tag className="h-3.5 w-3.5" />, label: 'Add tag', onClick: () => { setTagging(true); setMenuOpen(false); } },
-                  { icon: <Download className="h-3.5 w-3.5" />, label: 'Download', onClick: download },
-                  { icon: <Trash2 className="h-3.5 w-3.5 text-red-400" />, label: 'Delete', onClick: () => removeFile(file.id) },
+                  { icon: <Pin size={14} />, label: file.pinned ? 'Unpin' : 'Pin', onClick: () => togglePin(file.id) },
+                  { icon: <Tag size={14} />, label: 'Add tag', onClick: () => { setTagging(true); setMenuOpen(false); } },
+                  { icon: <Download size={14} />, label: 'Download', onClick: download },
+                  { icon: <Trash2 size={14} color="var(--clr-red)" />, label: 'Delete', onClick: () => removeFile(file.id) },
                 ].map((item) => (
                   <button
                     key={item.label}
-                    className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-zinc-300 hover:bg-zinc-800 transition-colors"
+                    className={s.fileMenuItem}
                     onClick={(e) => { e.stopPropagation(); item.onClick(); }}
                   >
                     {item.icon} {item.label}
@@ -93,28 +84,28 @@ function FileCard({ file, selected, onSelect, onOpen }: FileCardProps) {
           </div>
         </div>
       </div>
-      <p className="text-xs font-medium text-zinc-200 truncate mb-1">{file.name}</p>
-      <p className="text-[10px] text-zinc-600 mb-2">{formatBytes(file.size)}</p>
-      <p className="text-[10px] text-zinc-700 mt-auto">{humanDate(file.modifiedAt)}</p>
+      <p className={s.fileName}>{file.name}</p>
+      <p className={s.fileSize}>{formatBytes(file.size)}</p>
+      <p className={s.fileDate}>{humanDate(file.modifiedAt)}</p>
       {(file.tags.length > 0 || tagging) && (
-        <div className="flex flex-wrap gap-1 mt-2" onClick={(e) => e.stopPropagation()}>
+        <div className={s.fileTags} onClick={(e) => e.stopPropagation()}>
           {file.tags.map((t) => (
-            <span key={t} className="flex items-center gap-0.5 bg-zinc-800 text-zinc-400 rounded-full px-1.5 py-0.5 text-[9px]">
+            <span key={t} className={s.fileTag}>
               {t}
-              <button onClick={() => removeTag(t)}><X className="h-2 w-2" /></button>
+              <button className={s.fileTagRemove} onClick={() => removeTag(t)}><X size={8} /></button>
             </span>
           ))}
-          {tagging ? (
+          {tagging && (
             <input
               autoFocus
-              className="bg-zinc-800 text-zinc-200 rounded-full px-1.5 py-0.5 text-[9px] outline-none w-20"
+              className={s.fileTagInput}
               placeholder="tag…"
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') addTag(); if (e.key === 'Escape') setTagging(false); }}
               onBlur={() => setTagging(false)}
             />
-          ) : null}
+          )}
         </div>
       )}
     </div>
@@ -126,9 +117,7 @@ interface FileGridProps {
 }
 
 export function FileGrid({ onOpenFile }: FileGridProps) {
-  const {
-    files, folders, filter, selectedIds, setSelectedIds, currentFolderId, importFile, addFolder
-  } = useExplorerStore();
+  const { files, folders, filter, selectedIds, setSelectedIds, currentFolderId, importFile } = useExplorerStore();
 
   const onDrop = useCallback(async (dropped: File[]) => {
     for (const f of dropped) {
@@ -142,26 +131,16 @@ export function FileGrid({ onOpenFile }: FileGridProps) {
     }
   }, [importFile]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    noClick: true,
-  });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, noClick: true });
 
   const visibleFiles = useMemo(() => {
-    let list = currentFolderId === null
-      ? files
-      : files.filter((f) => f.parentId === currentFolderId);
-
+    let list = currentFolderId === null ? files : files.filter((f) => f.parentId === currentFolderId);
     if (filter.search) {
       const q = filter.search.toLowerCase();
       list = list.filter((f) => f.name.toLowerCase().includes(q) || f.tags.some((t) => t.toLowerCase().includes(q)));
     }
-    if (filter.types.length > 0) {
-      list = list.filter((f) => filter.types.includes(f.type));
-    }
-    if (filter.showPinnedOnly) {
-      list = list.filter((f) => f.pinned);
-    }
+    if (filter.types.length > 0) list = list.filter((f) => filter.types.includes(f.type));
+    if (filter.showPinnedOnly) list = list.filter((f) => f.pinned);
     list = [...list].sort((a, b) => {
       let av: string | number = a[filter.sortField as keyof VirtualFile] as string | number ?? '';
       let bv: string | number = b[filter.sortField as keyof VirtualFile] as string | number ?? '';
@@ -184,9 +163,7 @@ export function FileGrid({ onOpenFile }: FileGridProps) {
 
   const handleSelect = (id: string, multi: boolean) => {
     if (multi) {
-      setSelectedIds(
-        selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id]
-      );
+      setSelectedIds(selectedIds.includes(id) ? selectedIds.filter((x) => x !== id) : [...selectedIds, id]);
     } else {
       setSelectedIds(selectedIds.length === 1 && selectedIds[0] === id ? [] : [id]);
     }
@@ -195,51 +172,44 @@ export function FileGrid({ onOpenFile }: FileGridProps) {
   return (
     <div
       {...getRootProps()}
-      className={cn(
-        'flex-1 p-4 overflow-auto transition-colors',
-        isDragActive && 'bg-violet-500/5 ring-2 ring-violet-500/30 ring-inset'
-      )}
+      className={[s.grid, isDragActive ? s.dragActive : ''].join(' ')}
     >
       <input {...getInputProps()} />
       {isDragActive && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-          <div className="bg-zinc-900/90 rounded-2xl border-2 border-violet-500 px-8 py-6 text-violet-300 font-medium text-sm shadow-2xl">
-            Drop files to add to current folder
-          </div>
+        <div className={s.dropOverlay}>
+          <div className={s.dropOverlayInner}>Drop files to add to current folder</div>
         </div>
       )}
 
       {visibleFolders.length === 0 && visibleFiles.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-60 text-zinc-600 text-sm gap-3">
-          <FolderInput className="h-10 w-10" />
+        <div className={s.gridEmpty}>
+          <FolderInput size={40} />
           <p>Drag files here or use the toolbar to add them</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div>
           {visibleFolders.length > 0 && (
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-2 font-medium">Folders</p>
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(140px,1fr))] gap-2">
+            <div className={s.gridSection}>
+              <p className={s.gridLabel}>Folders</p>
+              <div className={s.folderGrid}>
                 {visibleFolders.map((folder) => (
                   <div
                     key={folder.id}
-                    className="flex items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-900/40 px-3 py-3 cursor-pointer hover:border-zinc-700 hover:bg-zinc-900/70 transition-colors"
+                    className={s.folderItem}
                     onDoubleClick={() => useExplorerStore.getState().setCurrentFolder(folder.id)}
                   >
-                    <FileIcon type="folder" className="h-5 w-5" />
-                    <span className="text-xs text-zinc-300 truncate">{folder.name}</span>
-                    {folder.pinned && <Pin className="h-2.5 w-2.5 text-yellow-500 shrink-0 ml-auto" />}
+                    <FileIcon type="folder" size={20} />
+                    <span className={s.folderName}>{folder.name}</span>
+                    {folder.pinned && <Pin size={10} color="var(--clr-yellow)" style={{ flexShrink: 0, marginLeft: 'auto' }} />}
                   </div>
                 ))}
               </div>
             </div>
           )}
           {visibleFiles.length > 0 && (
-            <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-600 mb-2 font-medium">
-                Files ({visibleFiles.length})
-              </p>
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3">
+            <div className={s.gridSection}>
+              <p className={s.gridLabel}>Files ({visibleFiles.length})</p>
+              <div className={s.fileGrid}>
                 {visibleFiles.map((file) => (
                   <FileCard
                     key={file.id}

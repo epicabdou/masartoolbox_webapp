@@ -15,13 +15,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}>
-      <body className="flex h-full bg-zinc-950 text-zinc-100">
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+      <body style={{ display: 'flex', height: '100%' }}>
         <TooltipProvider delayDuration={300}>
           <Sidebar />
-          <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
+          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, overflow: 'hidden' }}>
             <Header />
-            <main className="flex-1 overflow-auto">{children}</main>
+            <main style={{ flex: 1, overflow: 'auto' }}>{children}</main>
           </div>
         </TooltipProvider>
       </body>

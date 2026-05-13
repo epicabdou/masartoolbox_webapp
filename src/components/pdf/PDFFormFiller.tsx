@@ -1,18 +1,14 @@
 'use client';
-
 import React, { useEffect, useState } from 'react';
 import { FormInput, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { downloadBlob } from '@/lib/utils';
+import s from './pdf-tools.module.css';
 
 interface FieldEntry { name: string; type: string; value: string }
-
-interface PDFFormFillerProps {
-  data: ArrayBuffer;
-  filename: string;
-}
+interface PDFFormFillerProps { data: ArrayBuffer; filename: string }
 
 export function PDFFormFiller({ data, filename }: PDFFormFillerProps) {
   const [fields, setFields] = useState<FieldEntry[]>([]);
@@ -29,9 +25,7 @@ export function PDFFormFiller({ data, filename }: PDFFormFillerProps) {
         const rawFields = form.getFields();
         if (rawFields.length === 0) { setHasForm(false); setLoaded(true); return; }
         setFields(rawFields.map((f) => ({ name: f.getName(), type: f.constructor.name.replace('PDF', ''), value: '' })));
-      } catch {
-        setHasForm(false);
-      }
+      } catch { setHasForm(false); }
       setLoaded(true);
     }
     detectFields();
@@ -50,61 +44,43 @@ export function PDFFormFiller({ data, filename }: PDFFormFillerProps) {
         try {
           if (field.value) {
             const f = form.getField(field.name);
-            if (f.constructor.name === 'PDFTextField') {
-              (f as import('pdf-lib').PDFTextField).setText(field.value);
-            } else if (f.constructor.name === 'PDFCheckBox') {
-              if (field.value.toLowerCase() === 'true' || field.value === '1') {
-                (f as import('pdf-lib').PDFCheckBox).check();
-              }
-            }
+            if (f.constructor.name === 'PDFTextField') (f as import('pdf-lib').PDFTextField).setText(field.value);
+            else if (f.constructor.name === 'PDFCheckBox' && (field.value.toLowerCase() === 'true' || field.value === '1'))
+              (f as import('pdf-lib').PDFCheckBox).check();
           }
-        } catch { /* skip unfillable fields */ }
+        } catch { /* skip */ }
       }
       const bytes = await doc.save();
       downloadBlob(new Blob([bytes.buffer as ArrayBuffer], { type: 'application/pdf' }), filename.replace(/\.pdf$/i, '_filled.pdf'));
-    } finally {
-      setBusy(false);
-    }
+    } finally { setBusy(false); }
   }
 
   if (!loaded) return (
-    <Card><CardContent className="py-8 text-center text-zinc-500 text-sm">Loading form fields…</CardContent></Card>
+    <Card><CardContent style={{ padding: 32, textAlign: 'center', color: 'var(--text-faint)', fontSize: 13 }}>Loading form fields…</CardContent></Card>
   );
-
   if (!hasForm || fields.length === 0) return (
     <Card>
-      <CardHeader><CardTitle className="flex items-center gap-2"><FormInput className="h-4 w-4 text-violet-400" /> Form Filler</CardTitle></CardHeader>
-      <CardContent><p className="text-sm text-zinc-500">This PDF has no interactive form fields.</p></CardContent>
+      <CardHeader><CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}><FormInput size={14} color="var(--accent-light)" /> Form Filler</CardTitle></CardHeader>
+      <CardContent><p style={{ fontSize: 13, color: 'var(--text-faint)' }}>This PDF has no interactive form fields.</p></CardContent>
     </Card>
   );
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FormInput className="h-4 w-4 text-violet-400" /> Form Filler
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="text-xs text-zinc-500">{fields.length} field(s) detected.</p>
-        <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+      <CardHeader><CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}><FormInput size={14} color="var(--accent-light)" /> Form Filler</CardTitle></CardHeader>
+      <CardContent>
+        <p className={s.hint} style={{ marginBottom: 10 }}>{fields.length} field(s) detected.</p>
+        <div className={s.fieldList}>
           {fields.map((f, i) => (
-            <div key={i} className="space-y-1">
-              <label className="text-xs text-zinc-400 flex items-center gap-1.5">
-                {f.name}
-                <span className="text-zinc-600 text-[10px]">({f.type})</span>
-              </label>
-              <Input
-                value={f.value}
-                onChange={(e) => update(i, e.target.value)}
-                placeholder={f.type === 'CheckBox' ? 'true / false' : 'Enter value…'}
-              />
+            <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <label className={s.fieldLabel}>{f.name}<span className={s.fieldType}>({f.type})</span></label>
+              <Input value={f.value} onChange={(e) => update(i, e.target.value)}
+                placeholder={f.type === 'CheckBox' ? 'true / false' : 'Enter value…'} />
             </div>
           ))}
         </div>
-        <Button onClick={fill} disabled={busy} className="w-full">
-          <Download className="h-4 w-4" />
-          {busy ? 'Filling…' : 'Fill & Download'}
+        <Button onClick={fill} disabled={busy} style={{ width: '100%', marginTop: 12 }}>
+          <Download size={14} />{busy ? 'Filling…' : 'Fill & Download'}
         </Button>
       </CardContent>
     </Card>

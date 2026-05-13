@@ -1,0 +1,24 @@
+.zone {
+  display: flex;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-xl);
+  border: 2px dashed var(--border);
+  background: rgba(24,24,27,0.4);
+  transition: border-color 0.15s, background 0.15s;
+}
+.zone:hover { border-color: rgba(124,58,237,0.5); background: rgba(24,24,27,0.7); }
+.zone.active { border-color: var(--accent) !important; background: rgba(124,58,237,0.06) !important; }
+.zone.compact { padding: 16px; gap: 4px; }
+.zone.normal  { padding: 40px; gap: 12px; }
+
+.icon { color: var(--text-faint); transition: color 0.15s; }
+.zone.active .icon { color: var(--accent-light); }
+
+.label { text-align: center; font-weight: 500; }
+.label.compact { font-size: 11px; color: var(--text-muted); }
+.label.normal  { font-size: 13px; color: var(--text-secondary); }
+
+.sub { font-size: 11px; color: var(--text-faint); text-align: center; }

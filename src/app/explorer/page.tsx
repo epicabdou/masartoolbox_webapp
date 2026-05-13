@@ -50,104 +50,107 @@ export default function ExplorerPage() {
   function renderPreview(file: VirtualFile) {
     if (file.type === 'image' && file.dataUrl) {
       return (
-        <div className="flex items-center justify-center p-4 h-full bg-zinc-900/40">
-          <img src={file.dataUrl} alt={file.name} className="max-w-full max-h-full rounded-lg shadow-2xl object-contain" />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, height: '100%', background: 'rgba(24,24,27,0.4)' }}>
+          <img src={file.dataUrl} alt={file.name} style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: 'var(--radius-lg)', objectFit: 'contain' }} />
         </div>
       );
-    }
-    if ((file.type === 'docx' || file.type === 'doc') && file.dataUrl) {
-      return <p className="text-zinc-500 text-sm p-6">Re-import file to view DOCX content in preview.</p>;
     }
     if (file.type === 'markdown' && file.content) {
       return <MarkdownEditor initialContent={file.content} filename={file.name} />;
     }
     return (
-      <div className="flex items-center justify-center h-full text-zinc-600 text-sm">
-        <div className="text-center space-y-2">
-          <FileIcon type={file.type} className="h-12 w-12 mx-auto" />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-faint)', fontSize: 13 }}>
+        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
+          <FileIcon type={file.type} size={48} />
           <p>{file.name}</p>
-          <p className="text-xs">{formatBytes(file.size)}</p>
+          <p style={{ fontSize: 11 }}>{formatBytes(file.size)}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full">
+    <div style={{ display: 'flex', height: '100%' }}>
       {/* Folder tree sidebar */}
-      <div className="w-52 shrink-0 border-r border-zinc-800 bg-zinc-950 flex flex-col">
-        <div className="px-3 py-2 border-b border-zinc-800">
-          <p className="text-[10px] uppercase tracking-wider text-zinc-600 font-medium">Folders</p>
+      <div style={{ width: 208, flexShrink: 0, borderRight: '1px solid var(--border)', background: 'var(--bg-base)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--border)' }}>
+          <p style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-faint)', fontWeight: 500 }}>Folders</p>
         </div>
-        <ScrollArea className="flex-1">
+        <ScrollArea style={{ flex: 1 }}>
           <FolderTree />
         </ScrollArea>
       </div>
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <ExplorerToolbar onNewFolder={handleNewFolder} />
 
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1 px-4 py-2 border-b border-zinc-800 bg-zinc-950/40 text-xs text-zinc-500">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '8px 16px', borderBottom: '1px solid var(--border)', background: 'rgba(9,9,11,0.4)', fontSize: 11, color: 'var(--text-faint)' }}>
           {breadcrumbs.map((crumb, i) => (
             <React.Fragment key={crumb.id ?? 'root'}>
-              {i > 0 && <ChevronRight className="h-3 w-3 text-zinc-700" />}
+              {i > 0 && <ChevronRight size={12} color="var(--text-faint)" />}
               <button
-                className={`hover:text-zinc-300 transition-colors ${i === breadcrumbs.length - 1 ? 'text-zinc-300 font-medium' : ''}`}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                  color: i === breadcrumbs.length - 1 ? 'var(--text-secondary)' : 'var(--text-faint)',
+                  fontWeight: i === breadcrumbs.length - 1 ? 500 : 400,
+                  fontSize: 11, fontFamily: 'inherit',
+                  display: 'flex', alignItems: 'center', gap: 4,
+                }}
                 onClick={() => setCurrentFolder(crumb.id)}
               >
-                {i === 0 ? <span className="flex items-center gap-1"><Home className="h-3 w-3" />{crumb.name}</span> : crumb.name}
+                {i === 0 ? <><Home size={12} />{crumb.name}</> : crumb.name}
               </button>
             </React.Fragment>
           ))}
-          <div className="flex-1" />
-          <Button size="sm" variant="ghost" className="h-6 text-xs" onClick={() => setShowUpload((v) => !v)}>
-            <Upload className="h-3 w-3" /> Upload
+          <div style={{ flex: 1 }} />
+          <Button size="sm" variant="ghost" style={{ height: 24, fontSize: 11 }} onClick={() => setShowUpload((v) => !v)}>
+            <Upload size={12} /> Upload
           </Button>
         </div>
 
         {showUpload && (
-          <div className="p-3 border-b border-zinc-800 bg-zinc-950/40">
+          <div style={{ padding: 12, borderBottom: '1px solid var(--border)', background: 'rgba(9,9,11,0.4)' }}>
             <DropZone onFiles={onFiles} multiple compact label="Drop files to import" />
           </div>
         )}
 
-        <div className="flex-1 flex min-h-0">
-          <div className={`flex-1 flex flex-col min-w-0 relative ${previewFile ? 'border-r border-zinc-800' : ''}`}>
+        <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, position: 'relative', borderRight: previewFile ? '1px solid var(--border)' : 'none' }}>
             <FileGrid onOpenFile={setPreviewFile} />
           </div>
 
           {previewFile && (
-            <div className="w-80 shrink-0 flex flex-col bg-zinc-950">
-              <div className="flex items-center gap-2 px-3 py-2.5 border-b border-zinc-800">
-                <FileIcon type={previewFile.type} className="h-4 w-4" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-zinc-200 truncate">{previewFile.name}</p>
-                  <p className="text-[10px] text-zinc-600">{formatBytes(previewFile.size)}</p>
+            <div style={{ width: 320, flexShrink: 0, display: 'flex', flexDirection: 'column', background: 'var(--bg-base)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', borderBottom: '1px solid var(--border)' }}>
+                <FileIcon type={previewFile.type} size={16} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{previewFile.name}</p>
+                  <p style={{ fontSize: 10, color: 'var(--text-faint)' }}>{formatBytes(previewFile.size)}</p>
                 </div>
-                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setPreviewFile(null)}>
-                  <X className="h-3.5 w-3.5" />
+                <Button size="icon" variant="ghost" style={{ height: 24, width: 24 }} onClick={() => setPreviewFile(null)}>
+                  <X size={14} />
                 </Button>
               </div>
-              <div className="flex-1 overflow-hidden">{renderPreview(previewFile)}</div>
-              <div className="p-3 border-t border-zinc-800 space-y-1 text-[10px] text-zinc-600">
-                <div className="flex justify-between">
+              <div style={{ flex: 1, overflow: 'hidden' }}>{renderPreview(previewFile)}</div>
+              <div style={{ padding: 12, borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 4, fontSize: 10, color: 'var(--text-faint)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Type</span>
-                  <span className="text-zinc-400 uppercase">{previewFile.type}</span>
+                  <span style={{ color: 'var(--text-muted)', textTransform: 'uppercase' }}>{previewFile.type}</span>
                 </div>
-                <div className="flex justify-between">
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Size</span>
-                  <span className="text-zinc-400">{formatBytes(previewFile.size)}</span>
+                  <span style={{ color: 'var(--text-muted)' }}>{formatBytes(previewFile.size)}</span>
                 </div>
-                <div className="flex justify-between">
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Modified</span>
-                  <span className="text-zinc-400">{humanDate(previewFile.modifiedAt)}</span>
+                  <span style={{ color: 'var(--text-muted)' }}>{humanDate(previewFile.modifiedAt)}</span>
                 </div>
                 {previewFile.tags.length > 0 && (
-                  <div className="flex gap-1 flex-wrap pt-1">
+                  <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', paddingTop: 4 }}>
                     {previewFile.tags.map((t) => (
-                      <Badge key={t} variant="secondary" className="text-[9px]">{t}</Badge>
+                      <Badge key={t} variant="secondary" style={{ fontSize: 9 }}>{t}</Badge>
                     ))}
                   </div>
                 )}

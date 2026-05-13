@@ -5,6 +5,7 @@ import { Download, TableIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { downloadBlob } from '@/lib/utils';
+import s from './documents.module.css';
 
 interface SheetData {
   name: string;
@@ -48,8 +49,8 @@ export function SpreadsheetViewer({ buffer, filename }: SpreadsheetViewerProps) 
   };
 
   if (loading) return (
-    <div className="flex items-center justify-center h-40 text-zinc-500 text-sm gap-2">
-      <div className="h-4 w-4 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
+    <div className={s.spinner}>
+      <div className={s.spinIcon} />
       Parsing spreadsheet…
     </div>
   );
@@ -57,42 +58,42 @@ export function SpreadsheetViewer({ buffer, filename }: SpreadsheetViewerProps) 
   const sheet = sheets[activeSheet];
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-800 bg-zinc-950/60 flex-wrap">
-        <TableIcon className="h-4 w-4 text-green-400 shrink-0" />
-        {sheets.map((s, i) => (
+    <div className={s.sheetRoot}>
+      <div className={s.sheetToolbar}>
+        <TableIcon size={16} color="var(--clr-green)" style={{ flexShrink: 0 }} />
+        {sheets.map((sh, i) => (
           <button
             key={i}
             onClick={() => setActiveSheet(i)}
-            className={`px-3 py-1 rounded text-xs font-medium transition-colors ${i === activeSheet ? 'bg-zinc-700 text-zinc-100' : 'text-zinc-500 hover:text-zinc-300'}`}
+            className={[s.sheetTab, i === activeSheet ? s.active : s.inactive].join(' ')}
           >
-            {s.name}
+            {sh.name}
           </button>
         ))}
-        <div className="flex-1" />
+        <div className={s.sheetSpacer} />
         <Button size="sm" variant="outline" onClick={exportCsv}>
-          <Download className="h-3.5 w-3.5" /> CSV
+          <Download size={14} /> CSV
         </Button>
       </div>
-      <ScrollArea className="flex-1">
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs border-collapse">
-            <thead>
-              <tr className="bg-zinc-900/80 sticky top-0">
-                <th className="w-10 px-2 py-2 text-zinc-600 font-mono border-b border-r border-zinc-800 text-right">#</th>
+      <ScrollArea style={{ flex: 1 }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table className={s.sheetTable}>
+            <thead className={s.sheetThead}>
+              <tr>
+                <th className={s.sheetThRowNum}>#</th>
                 {sheet?.headers.map((h, i) => (
-                  <th key={i} className="px-3 py-2 text-left text-zinc-400 font-medium border-b border-r border-zinc-800 min-w-[100px] max-w-[240px] truncate">
-                    {h || <span className="text-zinc-700">{String.fromCharCode(65 + i)}</span>}
+                  <th key={i} className={s.sheetTh}>
+                    {h || <span style={{ color: 'var(--text-faint)' }}>{String.fromCharCode(65 + i)}</span>}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {sheet?.rows.map((row, ri) => (
-                <tr key={ri} className="hover:bg-zinc-800/30 transition-colors">
-                  <td className="px-2 py-1.5 text-zinc-700 font-mono border-r border-zinc-800/50 text-right">{ri + 1}</td>
+                <tr key={ri} className={s.sheetTr}>
+                  <td className={s.sheetTdRowNum}>{ri + 1}</td>
                   {sheet.headers.map((_, ci) => (
-                    <td key={ci} className="px-3 py-1.5 text-zinc-300 border-r border-zinc-800/30 max-w-[240px] truncate">
+                    <td key={ci} className={s.sheetTd}>
                       {row[ci] !== null && row[ci] !== undefined ? String(row[ci]) : ''}
                     </td>
                   ))}
@@ -101,12 +102,12 @@ export function SpreadsheetViewer({ buffer, filename }: SpreadsheetViewerProps) 
             </tbody>
           </table>
           {!sheet?.rows.length && (
-            <p className="text-center text-zinc-600 text-sm py-12">Empty sheet</p>
+            <p className={s.sheetEmpty}>Empty sheet</p>
           )}
         </div>
       </ScrollArea>
       {sheet && (
-        <div className="px-4 py-2 border-t border-zinc-800 text-xs text-zinc-600">
+        <div className={s.sheetFooter}>
           {sheet.rows.length} rows · {sheet.headers.length} columns
         </div>
       )}

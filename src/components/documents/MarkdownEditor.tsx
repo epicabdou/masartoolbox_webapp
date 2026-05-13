@@ -5,6 +5,7 @@ import { Eye, Code2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { downloadBlob } from '@/lib/utils';
+import s from './documents.module.css';
 
 interface MarkdownEditorProps {
   initialContent?: string;
@@ -43,34 +44,30 @@ export function MarkdownEditor({ initialContent = '', filename = 'document.md', 
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-zinc-800 bg-zinc-950/60">
+    <div className={s.mdRoot}>
+      <div className={s.mdToolbar}>
         <Button size="sm" variant={!preview ? 'default' : 'ghost'} onClick={() => setPreview(false)}>
-          <Code2 className="h-3.5 w-3.5" /> Edit
+          <Code2 size={14} /> Edit
         </Button>
         <Button size="sm" variant={preview ? 'default' : 'ghost'} onClick={() => setPreview(true)}>
-          <Eye className="h-3.5 w-3.5" /> Preview
+          <Eye size={14} /> Preview
         </Button>
-        <div className="flex-1" />
+        <div className={s.mdSpacer} />
         <Button size="sm" variant="outline" onClick={downloadMd}>
-          <Download className="h-3.5 w-3.5" /> .md
+          <Download size={14} /> .md
         </Button>
         <Button size="sm" variant="outline" onClick={downloadHtml}>
-          <Download className="h-3.5 w-3.5" /> .html
+          <Download size={14} /> .html
         </Button>
       </div>
-      <div className="flex-1 min-h-0">
+      <div className={s.mdBody}>
         {preview ? (
-          <ScrollArea className="h-full">
-            <div
-              className="prose prose-invert prose-sm max-w-none p-6"
-              dangerouslySetInnerHTML={{ __html: renderedHtml }}
-              style={{ fontSize: '14px', lineHeight: 1.7 }}
-            />
+          <ScrollArea style={{ height: '100%' }}>
+            <div className="prose" dangerouslySetInnerHTML={{ __html: renderedHtml }} style={{ padding: 24, fontSize: 14, lineHeight: 1.7 }} />
           </ScrollArea>
         ) : (
           <textarea
-            className="w-full h-full bg-transparent text-zinc-200 font-mono text-sm resize-none outline-none p-5 leading-relaxed"
+            className={s.mdTextarea}
             value={content}
             onChange={(e) => handleChange(e.target.value)}
             spellCheck={false}

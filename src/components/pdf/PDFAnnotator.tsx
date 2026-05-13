@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Highlighter, MessageSquare, Square, Underline, Download, Trash2, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { downloadBlob } from '@/lib/utils';
 import { AnnotationMark } from '@/types';
 import { generateId } from '@/lib/utils';
+import s from './pdf-tools.module.css';
 
 type Tool = 'highlight' | 'underline' | 'rectangle' | 'comment';
 
@@ -33,7 +34,8 @@ export function PDFAnnotator({ data, filename, totalPages }: PDFAnnotatorProps) 
   useEffect(() => {
     async function load() {
       const pdfjsLib = await import('pdfjs-dist');
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+      pdfjsLib.GlobalWorkerOptions.workerSrc =
+        `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
       const doc = await pdfjsLib.getDocument({ data: data.slice(0) }).promise;
       setPdfDoc(doc);
     }
@@ -50,13 +52,14 @@ export function PDFAnnotator({ data, filename, totalPages }: PDFAnnotatorProps) 
       canvas.width = viewport.width;
       canvas.height = viewport.height;
       const ctx = canvas.getContext('2d')!;
-      await page.render({ canvasContext: ctx, viewport }).promise;
-      drawAnnotations(ctx, canvas.width, canvas.height);
+      await page.render({ canvasContext: ctx as any, viewport, canvas } as any).promise;
+      drawAnnotations(ctx);
     }
     render();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pdfDoc, currentPage, annotations]);
 
-  const drawAnnotations = (ctx: CanvasRenderingContext2D, w: number, h: number) => {
+  const drawAnnotations = (ctx: CanvasRenderingContext2D) => {
     annotations.filter((a) => a.page === currentPage).forEach((a) => {
       ctx.save();
       ctx.globalAlpha = 0.5;
@@ -89,10 +92,7 @@ export function PDFAnnotator({ data, filename, totalPages }: PDFAnnotatorProps) 
     return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
   };
 
-  const onMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    setDrawing(true);
-    setStartPt(getPos(e));
-  };
+  const onMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => { setDrawing(true); setStartPt(getPos(e)); };
   const onMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!drawing) return;
     setDrawing(false);
@@ -124,9 +124,9 @@ export function PDFAnnotator({ data, filename, totalPages }: PDFAnnotatorProps) 
         if (!pg) continue;
         const { height } = pg.getSize();
         const hexToRgb = (hex: string) => {
-          const r = parseInt(hex.slice(1,3),16)/255;
-          const g = parseInt(hex.slice(3,5),16)/255;
-          const b = parseInt(hex.slice(5,7),16)/255;
+          const r = parseInt(hex.slice(1, 3), 16) / 255;
+          const g = parseInt(hex.slice(3, 5), 16) / 255;
+          const b = parseInt(hex.slice(5, 7), 16) / 255;
           return rgb(r, g, b);
         };
         if (ann.type === 'rectangle' || ann.type === 'highlight') {
@@ -150,90 +150,94 @@ export function PDFAnnotator({ data, filename, totalPages }: PDFAnnotatorProps) 
   const pageAnnotations = annotations.filter((a) => a.page === currentPage);
 
   const toolButtons: { tool: Tool; icon: React.ReactNode; label: string }[] = [
-    { tool: 'highlight', icon: <Highlighter className="h-3.5 w-3.5" />, label: 'Highlight' },
-    { tool: 'underline', icon: <Underline className="h-3.5 w-3.5" />, label: 'Underline' },
-    { tool: 'rectangle', icon: <Square className="h-3.5 w-3.5" />, label: 'Rectangle' },
-    { tool: 'comment', icon: <MessageSquare className="h-3.5 w-3.5" />, label: 'Comment' },
+    { tool: 'highlight', icon: <Highlighter size={14} />, label: 'Highlight' },
+    { tool: 'underline', icon: <Underline size={14} />, label: 'Underline' },
+    { tool: 'rectangle', icon: <Square size={14} />, label: 'Rectangle' },
+    { tool: 'comment', icon: <MessageSquare size={14} />, label: 'Comment' },
   ];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Highlighter className="h-4 w-4 text-violet-400" /> Annotate PDF
+          <CardTitle style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Highlighter size={14} color="var(--accent-light)" /> Annotate PDF
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex flex-wrap gap-2 items-center">
+        <CardContent>
+          <div className={s.annoTools} style={{ marginBottom: 10 }}>
             {toolButtons.map((tb) => (
-              <Button
-                key={tb.tool}
-                size="sm"
-                variant={tool === tb.tool ? 'default' : 'outline'}
-                onClick={() => setTool(tb.tool)}
-              >
+              <Button key={tb.tool} size="sm" variant={tool === tb.tool ? 'default' : 'outline'} onClick={() => setTool(tb.tool)}>
                 {tb.icon} {tb.label}
               </Button>
             ))}
-            <div className="flex items-center gap-1.5 ml-2">
-              <Palette className="h-3.5 w-3.5 text-zinc-400" />
+            <div className={s.colorRow}>
+              <Palette size={14} color="var(--text-faint)" />
               {COLORS.map((c) => (
                 <button
                   key={c}
-                  className={`h-5 w-5 rounded-full border-2 transition-transform ${color === c ? 'scale-125 border-white' : 'border-transparent'}`}
+                  className={[s.colorDot, color === c ? s.selected : ''].join(' ')}
                   style={{ background: c }}
                   onClick={() => setColor(c)}
                 />
               ))}
             </div>
           </div>
+
           {tool === 'comment' && (
             <input
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-sm text-zinc-100 placeholder:text-zinc-500"
+              style={{ width: '100%', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)', background: 'var(--bg-surface)', padding: '6px 12px', fontSize: 13, color: 'var(--text-primary)', outline: 'none', marginBottom: 10, boxSizing: 'border-box' }}
               placeholder="Comment text…"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
             />
           )}
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-zinc-500">Page:</span>
+
+          <div className={s.pageNumbers} style={{ marginBottom: 10 }}>
+            <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>Page:</span>
             {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map((p) => (
               <button
                 key={p}
                 onClick={() => setCurrentPage(p)}
-                className={`h-6 w-6 rounded text-xs font-medium transition-colors ${currentPage === p ? 'bg-violet-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'}`}
+                className={[s.pageNum2, currentPage === p ? s.active : s.inactive].join(' ')}
               >
                 {p}
               </button>
             ))}
-            {totalPages > 10 && <span className="text-xs text-zinc-500">+{totalPages - 10} more</span>}
+            {totalPages > 10 && <span style={{ fontSize: 11, color: 'var(--text-faint)' }}>+{totalPages - 10} more</span>}
           </div>
-          <div className="relative overflow-auto border border-zinc-800 rounded-lg bg-zinc-900">
-            <canvas
-              ref={canvasRef}
-              className="block max-w-full cursor-crosshair"
-              onMouseDown={onMouseDown}
-              onMouseUp={onMouseUp}
-            />
+
+          <div className={s['annoCanvas-wrap']}>
+            <canvas ref={canvasRef} className={s.annoCanvas} onMouseDown={onMouseDown} onMouseUp={onMouseUp} />
           </div>
+
           {pageAnnotations.length > 0 && (
-            <div className="space-y-1">
-              <p className="text-xs text-zinc-500">{pageAnnotations.length} annotation(s) on page {currentPage}</p>
-              {pageAnnotations.map((a) => (
-                <div key={a.id} className="flex items-center gap-2 text-xs text-zinc-400 rounded border border-zinc-800 px-2 py-1">
-                  <div className="h-3 w-3 rounded-sm shrink-0" style={{ background: a.color }} />
-                  <span className="capitalize">{a.type}</span>
-                  {a.comment && <span className="truncate text-zinc-500">· {a.comment}</span>}
-                  <Button size="icon" variant="ghost" className="ml-auto h-5 w-5" onClick={() => removeAnnotation(a.id)}>
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              ))}
+            <div style={{ marginTop: 10 }}>
+              <p style={{ fontSize: 11, color: 'var(--text-faint)', marginBottom: 6 }}>
+                {pageAnnotations.length} annotation(s) on page {currentPage}
+              </p>
+              <div className={s.annoList}>
+                {pageAnnotations.map((a) => (
+                  <div key={a.id} className={s.annoItem}>
+                    <div className={s.annoDot} style={{ background: a.color }} />
+                    <span className={s.annoType}>{a.type}</span>
+                    {a.comment && <span className={s.annoComment}>· {a.comment}</span>}
+                    <span className={s.annoSpacer} />
+                    <Button size="icon" variant="ghost" style={{ height: 20, width: 20 }} onClick={() => removeAnnotation(a.id)}>
+                      <Trash2 size={12} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
-          <Button onClick={exportAnnotated} disabled={busy || annotations.length === 0} className="w-full">
-            <Download className="h-4 w-4" />
+
+          <Button
+            onClick={exportAnnotated}
+            disabled={busy || annotations.length === 0}
+            style={{ width: '100%', marginTop: 12 }}
+          >
+            <Download size={14} />
             {busy ? 'Exporting…' : `Export with ${annotations.length} annotation(s)`}
           </Button>
         </CardContent>

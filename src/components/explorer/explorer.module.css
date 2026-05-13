@@ -1,0 +1,71 @@
+/* ExplorerToolbar */
+.toolbar { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-bottom: 1px solid var(--border); background: rgba(9,9,11,0.6); }
+.searchRow { display: flex; align-items: center; gap: 8px; }
+.searchWrap { position: relative; flex: 1; }
+.searchIcon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-faint); pointer-events: none; display: flex; }
+.searchClear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--text-faint); padding: 0; display: flex; }
+.sortRow { display: flex; align-items: center; gap: 8px; }
+.filterRow { display: flex; flex-wrap: wrap; gap: 4px; }
+.filterPill { padding: 2px 8px; border-radius: var(--radius-full); font-size: 10px; font-weight: 500; transition: background 0.15s, color 0.15s; cursor: pointer; border: 1px solid; font-family: inherit; background: none; }
+.filterPill.active { background: rgba(124,58,237,0.2); border-color: rgba(124,58,237,0.4); color: var(--accent-light); }
+.filterPill.inactive { border-color: var(--border); color: var(--text-faint); }
+.filterPill.inactive:hover { color: var(--text-secondary); }
+.filterClear { padding: 2px 8px; border-radius: var(--radius-full); font-size: 10px; color: var(--text-faint); cursor: pointer; border: none; background: none; font-family: inherit; }
+.filterClear:hover { color: var(--text-muted); }
+
+/* FolderTree */
+.treeRoot { padding: 8px; display: flex; flex-direction: column; }
+.pinnedLabel { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); padding: 4px 8px; font-weight: 500; }
+.pinnedDivider { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+.treeItem { display: flex; align-items: center; gap: 4px; border-radius: var(--radius); padding: 4px; cursor: pointer; transition: background 0.1s, color 0.1s; }
+.treeItem.active { background: rgba(124,58,237,0.15); color: var(--accent-light); }
+.treeItem.inactive { color: var(--text-muted); }
+.treeItem.inactive:hover { background: rgba(39,39,42,0.6); }
+.treeExpandBtn { padding: 2px; background: none; border: none; cursor: pointer; color: inherit; display: flex; }
+.treeLabel { flex: 1; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.treeActions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; opacity: 0; }
+.treeItem:hover .treeActions { opacity: 1; }
+.treeActionBtn { background: none; border: none; cursor: pointer; color: inherit; padding: 0; display: flex; }
+.treeEditInput { flex: 1; background: var(--bg-raised); color: var(--text-primary); font-size: 11px; border-radius: var(--radius-sm); padding: 2px 4px; outline: none; border: none; }
+.treeAllFiles { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border-radius: var(--radius); font-size: 11px; cursor: pointer; border: none; background: none; font-family: inherit; transition: background 0.1s, color 0.1s; }
+.treeAllFiles.active { background: rgba(124,58,237,0.15); color: var(--accent-light); }
+.treeAllFiles.inactive { color: var(--text-muted); }
+.treeAllFiles.inactive:hover { background: rgba(39,39,42,0.6); }
+.treeNewFolder { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border-radius: var(--radius); font-size: 11px; color: var(--text-faint); cursor: pointer; border: none; background: none; font-family: inherit; transition: color 0.1s, background 0.1s; margin-top: 8px; }
+.treeNewFolder:hover { color: var(--text-muted); background: rgba(39,39,42,0.4); }
+.treePinnedBtn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border-radius: var(--radius); font-size: 11px; cursor: pointer; border: none; background: none; font-family: inherit; transition: background 0.1s, color 0.1s; }
+.treePinnedBtn.active { background: rgba(124,58,237,0.15); color: var(--accent-light); }
+.treePinnedBtn.inactive { color: var(--text-muted); }
+.treePinnedBtn.inactive:hover { background: rgba(39,39,42,0.6); }
+
+/* FileGrid */
+.grid { flex: 1; padding: 16px; overflow: auto; transition: background 0.15s; position: relative; }
+.grid.dragActive { background: rgba(124,58,237,0.05); box-shadow: inset 0 0 0 2px rgba(124,58,237,0.3); }
+.gridEmpty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 240px; color: var(--text-faint); font-size: 13px; gap: 12px; }
+.gridSection { margin-bottom: 16px; }
+.gridLabel { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-bottom: 8px; font-weight: 500; }
+.folderGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.folderItem { display: flex; align-items: center; gap: 8px; border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); background: rgba(24,24,27,0.4); padding: 12px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.folderItem:hover { border-color: var(--border); background: rgba(24,24,27,0.7); }
+.folderName { font-size: 11px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.fileGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.fileCard { position: relative; display: flex; flex-direction: column; border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); padding: 12px; cursor: pointer; transition: border-color 0.15s, background 0.15s; user-select: none; background: rgba(24,24,27,0.4); }
+.fileCard:hover { border-color: var(--border); background: rgba(24,24,27,0.7); }
+.fileCard.selected { border-color: var(--accent); background: rgba(124,58,237,0.08); box-shadow: 0 0 0 2px rgba(124,58,237,0.3); }
+.fileCardHeader { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.fileCardMeta { display: flex; align-items: center; gap: 4px; }
+.fileMenuWrap { position: relative; }
+.fileMenuBtn { opacity: 0; transition: opacity 0.15s; }
+.fileCard:hover .fileMenuBtn { opacity: 1; }
+.fileMenu { position: absolute; right: 0; top: 28px; z-index: 20; min-width: 140px; border-radius: var(--radius-lg); border: 1px solid var(--border); background: var(--bg-surface); box-shadow: var(--shadow-xl); padding: 4px 0; }
+.fileMenuItem { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 12px; font-size: 11px; color: var(--text-secondary); cursor: pointer; border: none; background: none; font-family: inherit; transition: background 0.1s; }
+.fileMenuItem:hover { background: var(--bg-raised); }
+.fileName { font-size: 11px; font-weight: 500; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 4px; }
+.fileSize { font-size: 10px; color: var(--text-faint); margin-bottom: 8px; }
+.fileDate { font-size: 10px; color: var(--text-faint); margin-top: auto; }
+.fileTags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.fileTag { display: flex; align-items: center; gap: 2px; background: var(--bg-raised); color: var(--text-muted); border-radius: var(--radius-full); padding: 2px 6px; font-size: 9px; }
+.fileTagRemove { background: none; border: none; cursor: pointer; color: inherit; padding: 0; display: flex; }
+.fileTagInput { background: var(--bg-raised); color: var(--text-primary); border-radius: var(--radius-full); padding: 2px 6px; font-size: 9px; outline: none; width: 80px; border: none; }
+.dropOverlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 10; }
+.dropOverlayInner { background: rgba(9,9,11,0.9); border-radius: var(--radius-xl); border: 2px solid var(--accent); padding: 24px 32px; color: var(--accent-light); font-weight: 500; font-size: 13px; box-shadow: var(--shadow-xl); }
